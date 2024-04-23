@@ -36,8 +36,4 @@ class MainActivity : AppCompatActivity() {
         Log.d("NavController", "Navigate up: $navigateUp")
         return navigateUp || super.onSupportNavigateUp()
     }
-
-    override fun onBackPressed() {
-        if (!navController.navigateUp()) super.onBackPressed()
-    }
 }

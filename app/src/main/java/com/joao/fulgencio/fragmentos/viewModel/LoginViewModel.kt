@@ -16,7 +16,7 @@ val loginSuccess = MutableLiveData<Event<Boolean>>()
     fun login(matricula: String, senha: String) {
         viewModelScope.launch {
             try {
-                val response = KtorClient.client.post("http://172.16.234.194:8080/login") {
+                val response = KtorClient.client.post("http://172.16.227.192:8080/login") {
                     contentType(ContentType.Application.Json)
                     setBody(LoginRequest(matricula, senha))
                 }

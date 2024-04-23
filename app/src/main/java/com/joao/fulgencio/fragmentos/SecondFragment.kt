@@ -6,9 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.navigation.fragment.navArgs
 import com.joao.fulgencio.fragmentos.databinding.FragmentSecondBinding
+import com.joao.fulgencio.fragmentos.views.InputDialogFragment
 import java.util.Calendar
 
 private const val ARG_PARAM1 = "param1"
@@ -35,14 +35,8 @@ class SecondFragment : Fragment() {
         calendarView.setOnDateChangeListener{ view, year, month, day ->
             val selectedDate = Calendar.getInstance()
             selectedDate.set(year, month, day)
-
-            if (isDateInCurrentWeek(selectedDate)) {
-                Toast.makeText(requireContext(), "Date is in the current week", Toast.LENGTH_SHORT).show()
-                // Proceed with any actions for the selected date
-            } else {
-                Toast.makeText(requireContext(), "Date is not in the current week", Toast.LENGTH_SHORT).show()
-                // Optionally, revert to a default date or do nothing
-            }
+            val inputDialog = InputDialogFragment()
+            inputDialog.show(childFragmentManager, "inputDialog")
         }
 
 
