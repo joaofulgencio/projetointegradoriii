@@ -6,26 +6,54 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.navArgs
 import com.joao.fulgencio.fragmentos.databinding.FragmentSecondBinding
+import com.joao.fulgencio.fragmentos.location.LocationManager
 import com.joao.fulgencio.fragmentos.views.InputDialogFragment
 import java.util.Calendar
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Location
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
 class SecondFragment : Fragment() {
     var _binding: FragmentSecondBinding? = null
     val binding get() = _binding!!
     private val args: SecondFragmentArgs by navArgs()
+    private lateinit var locationManager: LocationManager
 
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        arguments?.let {
-//            param1 = it.getString(ARG_PARAM1)
-//            param2 = it.getString(ARG_PARAM2)
-//        }
-//    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        val referenceLatitude : Double = -22.8341535
+        val referenceLongitude : Double = -47.0528798
+        super.onCreate(savedInstanceState)
+        locationManager = LocationManager(requireContext())
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        } else {
+            locationManager.getLocation { location ->
+                if (location != null ) {
+                    val distance = calculateDistance(
+                        location.latitude,
+                        location.longitude,
+                        referenceLatitude,
+                        referenceLongitude)
+                    if (distance <= 3) {
+                        Toast.makeText(context, "Você está dentro do raio de 3 metros", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Você está fora do raio de 3 metros", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(context, "deu ruim, meu chapa", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -59,14 +87,10 @@ class SecondFragment : Fragment() {
 
     }
 
-//    companion object {
-//        @JvmStatic
-//        fun newInstance(param1: String, param2: String) =
-//            SecondFragment().apply {
-//                arguments = Bundle().apply {
-//                    putString(ARG_PARAM1, param1)
-//                    putString(ARG_PARAM2, param2)
-//                }
-//            }
-//    }
+    fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Float {
+        val result = FloatArray(1)
+        Location.distanceBetween(lat1, lon1, lat2, lon2, result)
+        return result[0] // Distance in meters
+    }
+
 }

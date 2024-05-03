@@ -39,7 +39,6 @@ class InputDialogFragment : DialogFragment() {
         val messageInput = view.findViewById<EditText>(R.id.messageInput)
         val notifyDatePicker = view.findViewById<Button>(R.id.notifyDatePicker)
         val notificationDateText = view.findViewById<EditText>(R.id.notificationDateText)
-
         notifyDatePicker.setOnClickListener {
             val datePicker = MaterialDatePicker.Builder.datePicker().build()
             datePicker.show(childFragmentManager, "datePicker")
@@ -49,11 +48,11 @@ class InputDialogFragment : DialogFragment() {
         }
 
         builder.setView(view)
-            .setTitle("Enter Details")
-            .setPositiveButton("Save") { dialog, id ->
+            .setTitle("Preencha os dados das atividades do dia")
+            .setPositiveButton("Salvar") { dialog, id ->
                 // Handle the saving of the data
             }
-            .setNegativeButton("Cancel") { dialog, id ->
+            .setNegativeButton("Cancelar") { dialog, id ->
                 dialog.cancel()
             }
         return builder.create()

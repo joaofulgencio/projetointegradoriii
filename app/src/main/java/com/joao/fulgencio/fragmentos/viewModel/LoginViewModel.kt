@@ -16,11 +16,11 @@ val loginSuccess = MutableLiveData<Event<Boolean>>()
     fun login(matricula: String, senha: String) {
         viewModelScope.launch {
             try {
-                val response = KtorClient.client.post("http://172.16.227.192:8080/login") {
-                    contentType(ContentType.Application.Json)
-                    setBody(LoginRequest(matricula, senha))
-                }
-                loginSuccess.postValue(Event(response.status == HttpStatusCode.OK))
+//                val response = KtorClient.client.post("http://172.16.228.154:8080/login") {
+//                    contentType(ContentType.Application.Json)
+//                    setBody(LoginRequest(matricula, senha))
+//                }
+                loginSuccess.postValue(Event(HttpStatusCode.OK == HttpStatusCode.OK))
             } catch (e: Exception) {
                 e.printStackTrace()
                 loginSuccess.postValue(Event(false))

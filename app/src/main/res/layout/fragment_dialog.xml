@@ -1,32 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:padding="4dp">
 
-    <TimePicker
-        android:id="@+id/startTimePicker"
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/txtInitTime"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:timePickerMode="spinner"
+        android:text="Selecione a hora de inicio"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="168dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/startTimePicker"/>
+    <TimePicker
+        android:id="@+id/startTimePicker"
+        android:layout_width="370dp"
+        android:layout_height="160dp"
+        android:textSize="11sp"
+        android:timePickerMode="spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TimePicker
-        android:id="@+id/endTimePicker"
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/txtEndTime"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:timePickerMode="spinner"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="9dp"
+        android:layout_marginEnd="9dp"
+        android:layout_marginBottom="455dp"
+        android:text="Selecione a hora de final"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/startTimePicker"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+    <TimePicker
+        android:id="@+id/endTimePicker"
+        android:layout_width="370dp"
+        android:layout_height="160dp"
+        android:textSize="11sp"
+        android:timePickerMode="spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/startTimePicker" />
 
     <EditText
         android:id="@+id/messageInput"
@@ -35,7 +60,8 @@
         android:hint="Enter a message"
         app:layout_constraintTop_toBottomOf="@id/endTimePicker"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="16sp"/>
 
     <Button
         android:id="@+id/notifyDatePicker"
@@ -44,7 +70,8 @@
         android:text="Set Notification Date"
         app:layout_constraintTop_toBottomOf="@id/messageInput"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="14sp"/>
 
     <EditText
         android:id="@+id/notificationDateText"
@@ -55,7 +82,8 @@
         android:hint="Notification Date"
         app:layout_constraintTop_toBottomOf="@id/notifyDatePicker"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="14sp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
