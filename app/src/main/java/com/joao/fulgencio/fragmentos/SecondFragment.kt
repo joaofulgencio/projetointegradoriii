@@ -15,8 +15,15 @@ import java.util.Calendar
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
+import androidx.core.content.ContextCompat
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import com.joao.fulgencio.fragmentos.worker.NotificationWorker
+import java.util.concurrent.TimeUnit
 
 private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
+private const val REQUEST_POST_NOTIFICATIONS = 1002
 
 class SecondFragment : Fragment() {
     var _binding: FragmentSecondBinding? = null
@@ -44,7 +51,7 @@ class SecondFragment : Fragment() {
                         location.longitude,
                         referenceLatitude,
                         referenceLongitude)
-                    if (distance <= 3) {
+                    if (distance <= 3000000000000) {
                         showToastOnce("Você está dentro do raio de 3 metros")
                     } else {
                         showToastOnce("Você está fora do raio de 3 metros")
@@ -71,6 +78,10 @@ class SecondFragment : Fragment() {
     ): View? {
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
         val calendarView = binding.calendarView
+
+        // Verifique a permissão para notificações
+        checkNotificationPermission()
+
         calendarView.setOnDateChangeListener{ view, year, month, day ->
             val selectedDate = Calendar.getInstance()
             selectedDate.set(year, month, day)
@@ -78,8 +89,55 @@ class SecondFragment : Fragment() {
             inputDialog.show(childFragmentManager, "inputDialog")
         }
 
+        // Registra um FragmentResultListener para capturar os dados do InputDialogFragment
+        parentFragmentManager.setFragmentResultListener("inputRequestKey", this) { key, bundle ->
+            val message = bundle.getString("message", "Mensagem padrão")
+            val delayInSeconds = bundle.getInt("delay", 10)
+            scheduleNotification(message, delayInSeconds.toLong())
+        }
 
     return binding.root
+    }
+
+    // Verifica e solicita a permissão se necessário
+    private fun checkNotificationPermission() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_POST_NOTIFICATIONS)
+        }
+    }
+
+    // Gerencia a resposta da permissão
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_POST_NOTIFICATIONS) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // A permissão foi concedida, agende a notificação ou prossiga
+                val message = "Mensagem configurada"
+                val delayInSeconds = 10L // Para teste
+                scheduleNotification(message, delayInSeconds)
+            } else {
+                // A permissão foi negada, forneça feedback ao usuário
+                Toast.makeText(requireContext(), "Permissão de notificações não concedida. Notificações desativadas.", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    // Função para agendar a notificação
+    private fun scheduleNotification(message: String, delayInSeconds: Long) {
+        // Prepara os dados de entrada para a notificação
+        val notificationData = Data.Builder()
+            .putString(NotificationWorker.NOTIFICATION_TITLE, "Notificação Agendada")
+            .putString(NotificationWorker.NOTIFICATION_MESSAGE, message)
+            .build()
+
+        // Configura a WorkRequest com o atraso desejado
+        val workRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
+            .setInputData(notificationData)
+            .setInitialDelay(delayInSeconds, TimeUnit.SECONDS)
+            .build()
+
+        // Agenda a notificação com WorkManager
+        WorkManager.getInstance(requireContext()).enqueue(workRequest)
     }
 
     private fun disableCalendarView() {

@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TimePicker
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.setFragmentResult
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.joao.fulgencio.fragmentos.R
@@ -50,7 +51,17 @@ class InputDialogFragment : DialogFragment() {
         builder.setView(view)
             .setTitle("Preencha os dados das atividades do dia")
             .setPositiveButton("Salvar") { dialog, id ->
-                // Handle the saving of the data
+                val message = messageInput.text.toString()
+                val notifyDate = notificationDateText.text.toString()
+
+                // Retorna os dados usando setFragmentResult
+                setFragmentResult(
+                    "inputRequestKey",
+                    Bundle().apply {
+                        putString("message", message)
+                        putString("notifyDate", notifyDate)
+                        // Adicione mais dados conforme necessário
+                    })
             }
             .setNegativeButton("Cancelar") { dialog, id ->
                 dialog.cancel()

@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.navigation.NavController
-import androidx.navigation.NavHost
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -17,6 +16,7 @@ import com.joao.fulgencio.fragmentos.databinding.ActivityMainBinding
 private const val SESSION_PREF = "session_pref"
 private const val LOGGED_IN = "logged_in"
 private const val LOGIN_TIME = "login_time"
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
