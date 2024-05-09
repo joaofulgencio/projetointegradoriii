@@ -1,5 +1,7 @@
 package com.joao.fulgencio.fragmentos
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,66 +14,75 @@ import com.joao.fulgencio.fragmentos.databinding.FragmentFirstBinding
 import com.joao.fulgencio.fragmentos.viewModel.LoginViewModel
 
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
+private const val SESSION_PREF = "session_pref"
+private const val LOGGED_IN = "logged_in"
+private const val LOGIN_TIME = "login_time"
+private const val SESSION_DURATION = 15 * 60 * 1000 // 15 minutos em milissegundos
 class FirstFragment : Fragment() {
     private var _binding: FragmentFirstBinding? = null
     private val viewModel by viewModels<LoginViewModel>()
+    private lateinit var sharedPreferences: SharedPreferences
     val binding get() = _binding!!
 
-    private var param1: String? = null
-    private var param2: String? = null
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        arguments?.let {
-//            param1 = it.getString(ARG_PARAM1)
-//            param2 = it.getString(ARG_PARAM2)
-//        }
-//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentFirstBinding.inflate(inflater, container, false)
-//        val bundle = Bundle()
-//        bundle.putString("example", "João")
-//        _binding!!.btnFragamento2.setOnClickListener {
-//            findNavController().navigate(R.id.action_firstFragment_to_secondFragment, bundle)
-//        }
-        param()
+
+        sharedPreferences = requireContext().getSharedPreferences(SESSION_PREF, Context.MODE_PRIVATE)
+
+        if (isUserLoggedIn()) {
+            navigateToSecondFragment()
+        } else {
+            configureLogin()
+        }
+
         return _binding!!.root
     }
 
-    private fun param() {
-        val acao = FirstFragmentDirections.actionFirstFragmentToSecondFragment("João")
-        _binding!!.btnFragamento2.setOnClickListener{
+    private fun configureLogin() {
+        _binding!!.btnFragamento2.setOnClickListener {
             val matricula = _binding!!.edtLogin.text.toString()
             val senha = _binding!!.edtPassword.text.toString()
             viewModel.login(matricula, senha)
         }
+
         viewModel.loginSuccess.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let {
-                success ->
-                    if (success == true) {
-                        findNavController().navigate(acao)
-                    } else {
-                        Toast.makeText(context, "Matrícula ou senha inválidos", Toast.LENGTH_SHORT)
-                            .show()
-                    }
+            event.getContentIfNotHandled()?.let { success ->
+                if (success) {
+                    saveSessionData()
+                    navigateToSecondFragment()
+                } else {
+                    Toast.makeText(context, "Matrícula ou senha inválidos", Toast.LENGTH_SHORT)
+                        .show()
                 }
+            }
         }
     }
-//    companion object {
-//        @JvmStatic
-//        fun newInstance(param1: String, param2: String) =
-//            FirstFragment().apply {
-//                arguments = Bundle().apply {
-//                    putString(ARG_PARAM1, param1)
-//                    putString(ARG_PARAM2, param2)
-//                }
-//            }
-//    }
+    private fun isUserLoggedIn(): Boolean {
+        val loggedIn = sharedPreferences.getBoolean(LOGGED_IN, false)
+        val loginTime = sharedPreferences.getLong(LOGIN_TIME, 0)
+        val currentTime = System.currentTimeMillis()
+
+        return loggedIn && (currentTime - loginTime < SESSION_DURATION)
+    }
+
+    private fun saveSessionData() {
+        val editor = sharedPreferences.edit()
+        editor.putBoolean(LOGGED_IN, true)
+        editor.putLong(LOGIN_TIME, System.currentTimeMillis())
+        editor.apply()
+    }
+
+    private fun navigateToSecondFragment() {
+        val acao = FirstFragmentDirections.actionFirstFragmentToSecondFragment("João")
+        findNavController().navigate(acao)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
