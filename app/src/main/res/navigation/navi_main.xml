@@ -28,5 +28,11 @@
             app:popUpToInclusive="true" />
     </fragment>
 
+    <action
+        android:id="@+id/action_global_firstFragment"
+        app:destination="@id/firstFragment"
+        app:popUpToInclusive="true"
+        app:popUpTo="@id/firstFragment" />
+
 
 </navigation>
