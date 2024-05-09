@@ -23,6 +23,7 @@ class SecondFragment : Fragment() {
     val binding get() = _binding!!
     private val args: SecondFragmentArgs by navArgs()
     private lateinit var locationManager: LocationManager
+    private var toastShown = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val referenceLatitude : Double = -22.8341535
@@ -44,9 +45,9 @@ class SecondFragment : Fragment() {
                         referenceLatitude,
                         referenceLongitude)
                     if (distance <= 3) {
-                        Toast.makeText(context, "Você está dentro do raio de 3 metros", Toast.LENGTH_SHORT).show()
+                        showToastOnce("Você está dentro do raio de 3 metros")
                     } else {
-                        Toast.makeText(context, distance.toString() + "Você está fora do raio de 3 metros", Toast.LENGTH_SHORT).show()
+                        showToastOnce("Você está fora do raio de 3 metros")
                         disableCalendarView()
                     }
                 } else {
@@ -54,6 +55,14 @@ class SecondFragment : Fragment() {
                     disableCalendarView()
                 }
             }
+        }
+    }
+
+    private fun showToastOnce(message: String) {
+        // Mostra o toast apenas se ainda não foi mostrado
+        if (!toastShown) {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            toastShown = true // Atualiza a flag para evitar futuros toasts
         }
     }
     override fun onCreateView(
@@ -98,4 +107,10 @@ class SecondFragment : Fragment() {
         return result[0] // Distance in meters
     }
 
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        locationManager.stopLocationUpdates()
+        _binding = null
+    }
 }
