@@ -46,10 +46,12 @@ class SecondFragment : Fragment() {
                     if (distance <= 3) {
                         Toast.makeText(context, "Você está dentro do raio de 3 metros", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(context, "Você está fora do raio de 3 metros", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, distance.toString() + "Você está fora do raio de 3 metros", Toast.LENGTH_SHORT).show()
+                        disableCalendarView()
                     }
                 } else {
                     Toast.makeText(context, "deu ruim, meu chapa", Toast.LENGTH_SHORT).show()
+                    disableCalendarView()
                 }
             }
         }
@@ -71,6 +73,9 @@ class SecondFragment : Fragment() {
     return binding.root
     }
 
+    private fun disableCalendarView() {
+        binding.calendarView.setOnDateChangeListener(null)
+    }
     private fun isDateInCurrentWeek(date: Calendar): Boolean {
         val currentWeek = Calendar.getInstance()
         val startOfWeek = Calendar.getInstance()
