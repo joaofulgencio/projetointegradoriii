@@ -12,6 +12,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.joao.fulgencio.fragmentos.databinding.ActivityMainBinding
+import com.joao.fulgencio.fragmentos.session.SessionManager
 
 private const val SESSION_PREF = "session_pref"
 private const val LOGGED_IN = "logged_in"
@@ -26,9 +27,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        SessionManager.initialize(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(binding.topAppBar)
         sharedPreferences = getSharedPreferences(SESSION_PREF, Context.MODE_PRIVATE)
         initToolbar()
     }
@@ -37,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = binding.navHostFragment.getFragment<NavHostFragment>()
         navController = navHostFragment.navController
         appBarConfiguration = AppBarConfiguration(navController.graph)
-        binding.toolbar.setupWithNavController(navController, appBarConfiguration)
+        binding.topAppBar.setupWithNavController(navController, appBarConfiguration)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -74,7 +76,7 @@ class MainActivity : AppCompatActivity() {
         // Volta ao fragmento de login (FirstFragment)
         val navHostFragment = binding.navHostFragment.getFragment<NavHostFragment>()
         navController = navHostFragment.navController
-        navController.navigate(R.id.action_global_firstFragment)
+        navController.navigate(R.id.loginFragment)
 
         Log.d("MainActivity", "Logout action completed")
     }

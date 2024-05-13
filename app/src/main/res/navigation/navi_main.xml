@@ -3,36 +3,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navi_main"
-    app:startDestination="@id/firstFragment">
+    app:startDestination="@id/loginFragment">
     <fragment
-        android:id="@+id/firstFragment"
-        android:name="com.joao.fulgencio.fragmentos.FirstFragment"
-        android:label="fragment_first"
-        tools:layout="@layout/fragment_first" >
+        android:id="@+id/loginFragment"
+        android:name="com.joao.fulgencio.fragmentos.LoginFragment"
+        android:label="LoginFragment" >
         <action
-            android:id="@+id/action_firstFragment_to_secondFragment"
-            app:destination="@id/secondFragment" />
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment"/>
+        <action
+            android:id="@+id/action_loginFragment_to_punchFragment"
+            app:destination="@id/punchFragment" />
     </fragment>
     <fragment
-        android:id="@+id/secondFragment"
-        android:name="com.joao.fulgencio.fragmentos.SecondFragment"
-        android:label="fragment_second"
-        tools:layout="@layout/fragment_second" >
-        <argument
-            android:name="nome"
-            app:argType="string" />
+        android:id="@+id/punchFragment"
+        android:name="com.joao.fulgencio.fragmentos.PunchFragment"
+        android:label="fragment_punch"
+        tools:layout="@layout/fragment_punch" >
         <action
-            android:id="@+id/action_secondFragment_to_firstFragment"
-            app:destination="@id/firstFragment"
-            app:popUpTo="@id/secondFragment"
+            android:id="@+id/action_punchFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.joao.fulgencio.fragmentos.RegisterFragment"
+        android:label="RegisterFragment" >
+        <action
+            android:id="@+id/action_registerFragment_to_punchFragment"
+            app:destination="@id/punchFragment"
+            app:popUpTo="@id/registerFragment"
             app:popUpToInclusive="true" />
     </fragment>
-
-    <action
-        android:id="@+id/action_global_firstFragment"
-        app:destination="@id/firstFragment"
-        app:popUpToInclusive="true"
-        app:popUpTo="@id/firstFragment" />
-
-
 </navigation>

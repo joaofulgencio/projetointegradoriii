@@ -7,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.navigation.fragment.navArgs
-import com.joao.fulgencio.fragmentos.databinding.FragmentSecondBinding
 import com.joao.fulgencio.fragmentos.location.LocationManager
 import com.joao.fulgencio.fragmentos.views.InputDialogFragment
 import java.util.Calendar
@@ -19,16 +17,17 @@ import androidx.core.content.ContextCompat
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.google.android.material.transition.MaterialSharedAxis
+import com.joao.fulgencio.fragmentos.databinding.FragmentPunchBinding
 import com.joao.fulgencio.fragmentos.worker.NotificationWorker
 import java.util.concurrent.TimeUnit
 
 private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
 private const val REQUEST_POST_NOTIFICATIONS = 1002
 
-class SecondFragment : Fragment() {
-    var _binding: FragmentSecondBinding? = null
+class PunchFragment : Fragment() {
+    var _binding: FragmentPunchBinding? = null
     val binding get() = _binding!!
-    private val args: SecondFragmentArgs by navArgs()
     private lateinit var locationManager: LocationManager
     private var toastShown = false
 
@@ -36,6 +35,16 @@ class SecondFragment : Fragment() {
         val referenceLatitude : Double = -22.8341535
         val referenceLongitude : Double = -47.0528798
         super.onCreate(savedInstanceState)
+        // Cria uma nova transição de entrada para o eixo X para o forward
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true).apply {
+            duration = resources.getInteger(R.integer.reply_motion_duration_large).toLong()
+        }
+
+        // Cria uma nova transição de retorno para o eixo X para o backward
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, false).apply {
+            duration = resources.getInteger(R.integer.reply_motion_duration_large).toLong()
+        }
+
         locationManager = LocationManager(requireContext())
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
@@ -72,11 +81,12 @@ class SecondFragment : Fragment() {
             toastShown = true // Atualiza a flag para evitar futuros toasts
         }
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentSecondBinding.inflate(inflater, container, false)
+        _binding = FragmentPunchBinding.inflate(inflater, container, false)
         val calendarView = binding.calendarView
 
         // Verifique a permissão para notificações
@@ -156,6 +166,7 @@ class SecondFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as? MainActivity)?.supportActionBar?.title = "Bater Ponto"
 
     }
 
