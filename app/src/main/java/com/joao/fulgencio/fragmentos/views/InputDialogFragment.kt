@@ -2,33 +2,25 @@ package com.joao.fulgencio.fragmentos.views
 
 import android.app.Dialog
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TimePicker
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.joao.fulgencio.fragmentos.R
+import com.joao.fulgencio.fragmentos.viewModel.PointViewModel
+import kotlinx.coroutines.launch
+import java.util.Calendar
+import java.util.TimeZone
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [InputDialogFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class InputDialogFragment : DialogFragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private val viewModel by viewModels<PointViewModel>()
+    private var day: String = ""
+    private var month: String = ""
+    private var year: String = ""
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = MaterialAlertDialogBuilder(requireContext())
@@ -43,29 +35,41 @@ class InputDialogFragment : DialogFragment() {
         notifyDatePicker.setOnClickListener {
             val datePicker = MaterialDatePicker.Builder.datePicker().build()
             datePicker.show(childFragmentManager, "datePicker")
-            datePicker.addOnPositiveButtonClickListener {
+            datePicker.addOnPositiveButtonClickListener { selection ->
+                val calendar = Calendar.getInstance(TimeZone.getDefault())
+                calendar.timeInMillis = selection
+
+                year = calendar.get(Calendar.YEAR).toString()
+                month = (calendar.get(Calendar.MONTH) + 1).toString()
+                day = calendar.get(Calendar.DAY_OF_MONTH).toString()
                 notificationDateText.setText(datePicker.headerText)
+                notifyDatePicker.text = "Data selecionada: " + datePicker.headerText
             }
         }
 
         builder.setView(view)
-            .setTitle("Preencha os dados das atividades do dia")
+            .setTitle("Bater Ponto")
             .setPositiveButton("Salvar") { dialog, id ->
                 val message = messageInput.text.toString()
                 val notifyDate = notificationDateText.text.toString()
-
-                // Retorna os dados usando setFragmentResult
-                setFragmentResult(
-                    "inputRequestKey",
-                    Bundle().apply {
-                        putString("message", message)
-                        putString("notifyDate", notifyDate)
-                        // Adicione mais dados conforme necessário
-                    })
+                viewModel.viewModelScope.launch {
+                    viewModel.point(
+                        "joaooctf@gmail.com",
+                        day,
+                        month,
+                        year,
+                        startTimePicker.hour.toString(),
+                        endTimePicker.hour.toString(),
+                        notifyDate,
+                        message
+                    )
+                }
             }
             .setNegativeButton("Cancelar") { dialog, id ->
                 dialog.cancel()
             }
         return builder.create()
     }
+
+
 }

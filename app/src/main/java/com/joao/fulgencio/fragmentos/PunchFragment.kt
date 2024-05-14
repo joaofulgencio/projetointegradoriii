@@ -14,13 +14,10 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
 import androidx.core.content.ContextCompat
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
+import androidx.fragment.app.viewModels
 import com.google.android.material.transition.MaterialSharedAxis
 import com.joao.fulgencio.fragmentos.databinding.FragmentPunchBinding
-import com.joao.fulgencio.fragmentos.worker.NotificationWorker
-import java.util.concurrent.TimeUnit
+import com.joao.fulgencio.fragmentos.viewModel.PointViewModel
 
 private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
 private const val REQUEST_POST_NOTIFICATIONS = 1002
@@ -30,6 +27,7 @@ class PunchFragment : Fragment() {
     val binding get() = _binding!!
     private lateinit var locationManager: LocationManager
     private var toastShown = false
+    private val viewModel by viewModels<PointViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val referenceLatitude : Double = -22.8341535
@@ -99,13 +97,15 @@ class PunchFragment : Fragment() {
             inputDialog.show(childFragmentManager, "inputDialog")
         }
 
-        // Registra um FragmentResultListener para capturar os dados do InputDialogFragment
-        parentFragmentManager.setFragmentResultListener("inputRequestKey", this) { key, bundle ->
-            val message = bundle.getString("message", "Mensagem padrão")
-            val delayInSeconds = bundle.getInt("delay", 10)
-            scheduleNotification(message, delayInSeconds.toLong())
+        viewModel.pointSuccess.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { success ->
+                if (success) {
+                    Toast.makeText(context, "Registro de ponto realizado com sucesso", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Erro ao registrar", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
-
     return binding.root
     }
 
@@ -121,33 +121,10 @@ class PunchFragment : Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_POST_NOTIFICATIONS) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // A permissão foi concedida, agende a notificação ou prossiga
-                val message = "Mensagem configurada"
-                val delayInSeconds = 10L // Para teste
-                scheduleNotification(message, delayInSeconds)
             } else {
-                // A permissão foi negada, forneça feedback ao usuário
                 Toast.makeText(requireContext(), "Permissão de notificações não concedida. Notificações desativadas.", Toast.LENGTH_LONG).show()
             }
         }
-    }
-
-    // Função para agendar a notificação
-    private fun scheduleNotification(message: String, delayInSeconds: Long) {
-        // Prepara os dados de entrada para a notificação
-        val notificationData = Data.Builder()
-            .putString(NotificationWorker.NOTIFICATION_TITLE, "Notificação Agendada")
-            .putString(NotificationWorker.NOTIFICATION_MESSAGE, message)
-            .build()
-
-        // Configura a WorkRequest com o atraso desejado
-        val workRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
-            .setInputData(notificationData)
-            .setInitialDelay(delayInSeconds, TimeUnit.SECONDS)
-            .build()
-
-        // Agenda a notificação com WorkManager
-        WorkManager.getInstance(requireContext()).enqueue(workRequest)
     }
 
     private fun disableCalendarView() {
@@ -167,7 +144,6 @@ class PunchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as? MainActivity)?.supportActionBar?.title = "Bater Ponto"
-
     }
 
     fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Float {
