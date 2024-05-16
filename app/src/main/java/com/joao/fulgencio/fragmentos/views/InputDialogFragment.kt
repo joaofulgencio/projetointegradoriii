@@ -55,9 +55,7 @@ class InputDialogFragment : DialogFragment() {
                 viewModel.viewModelScope.launch {
                     viewModel.point(
                         "joaooctf@gmail.com",
-                        day,
-                        month,
-                        year,
+                        "$day/$month/$year",
                         startTimePicker.hour.toString(),
                         endTimePicker.hour.toString(),
                         notifyDate,

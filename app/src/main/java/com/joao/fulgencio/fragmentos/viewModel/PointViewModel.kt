@@ -32,7 +32,7 @@ class PointViewModel(application: Application) : AndroidViewModel(application) {
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.Main + job)
 
-    fun point(email: String, dia: String, mes: String, ano: String,  entrada: String, saida: String, notifyDate: String, message: String) {
+    fun point(email: String, dataDoPonto: String,  entrada: String, saida: String, notifyDate: String, message: String) {
         val job = SupervisorJob()
         val scope = CoroutineScope(Dispatchers.Main + job)
 
@@ -46,7 +46,7 @@ class PointViewModel(application: Application) : AndroidViewModel(application) {
                 // Bater ponto
                 val response = withContext(Dispatchers.IO) {
                     Log.d("PointViewModel", "Iniciando chamada para API com email: $email, entrada: $entrada, saida: $saida")
-                    postPoint(email, dia, mes, ano, entrada, saida)
+                    postPoint(email, dataDoPonto, entrada, saida)
                 }
                 Log.d("PointViewModel", "Resposta da API recebida: ${response.status}")
 
@@ -67,14 +67,14 @@ class PointViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private suspend fun postPoint(email: String, dia: String, mes: String, ano: String,  entrada: String, saida: String) : HttpResponse {
+    private suspend fun postPoint(email: String, dataDoPonto: String,  entrada: String, saida: String) : HttpResponse {
          return KtorClient.client.post("http://10.0.2.2:8080/baterPonto") {
             contentType(ContentType.Application.Json)
-            setBody(BaterPonto(email, dia, mes, ano, entrada, saida))
+            setBody(BaterPonto(email, dataDoPonto, entrada, saida))
         }
     }
 
-    data class BaterPonto(val email: String, val dia: String, val mes: String, val ano: String, val entrada: String, val saida: String)
+    data class BaterPonto(val email: String, val dataDoPonto: String, val entrada: String, val saida: String)
 
 
 
