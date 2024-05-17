@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:showIn="@layout/fragment_report">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/punch_item"
+        style="@style/AppTheme"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="35dp"
+        android:layout_marginEnd="35dp"
+        android:layout_marginBottom="35dp"
+        android:checkable="false"
+        android:clickable="false"
+        android:focusable="false"
+        app:cardBackgroundColor="@color/grey"
+        app:cardElevation="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="15dp">
+
+            <TextView
+                android:id="@+id/txtIvEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="joaooctf@gmail.com"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/txtDataDoPonto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="17/5/2024"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/txtEntrada"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Entrada: 8"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/txtSaida"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Saida: 17"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:textColor="@color/black" />
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

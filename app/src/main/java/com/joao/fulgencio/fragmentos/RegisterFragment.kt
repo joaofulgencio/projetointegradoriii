@@ -1,7 +1,6 @@
 package com.joao.fulgencio.fragmentos
 
 import android.os.Bundle
-import android.se.omapi.Session
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -53,7 +52,7 @@ class RegisterFragment : Fragment() {
         viewModel.registerSuccess.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { success ->
                 if (success) {
-                    SessionManager.saveSessionData()
+                    SessionManager.saveSessionData(binding.edtEmail.text.toString())
                     Toast.makeText(context, "Registro realizado com sucesso", Toast.LENGTH_SHORT).show()
                     navigateToPunchFragment()
                 } else {

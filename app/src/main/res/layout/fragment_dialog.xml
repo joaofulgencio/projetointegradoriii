@@ -72,6 +72,9 @@
 
     <Button
         android:id="@+id/notifyDatePicker"
+        style="@style/Widget.Material3.Button.ElevatedButton"
+        android:backgroundTint="@color/grey"
+        android:textColor="@color/white"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Selecione o dia para a notificação"

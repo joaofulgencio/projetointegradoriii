@@ -1,16 +1,21 @@
 package com.joao.fulgencio.fragmentos.views
 
 import android.app.Dialog
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TimePicker
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.joao.fulgencio.fragmentos.R
+import com.joao.fulgencio.fragmentos.session.SessionManager
 import com.joao.fulgencio.fragmentos.viewModel.PointViewModel
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -21,17 +26,21 @@ class InputDialogFragment : DialogFragment() {
     private var day: String = ""
     private var month: String = ""
     private var year: String = ""
+    private lateinit var startTimePicker: TimePicker
+    private lateinit var endTimePicker: TimePicker
+    private lateinit var messageInput: EditText
+    private lateinit var notificationDateText: EditText
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = MaterialAlertDialogBuilder(requireContext())
         val inflater = requireActivity().layoutInflater
         val view = inflater.inflate(R.layout.fragment_dialog, null)
 
-        val startTimePicker = view.findViewById<TimePicker>(R.id.startTimePicker)
-        val endTimePicker = view.findViewById<TimePicker>(R.id.endTimePicker)
-        val messageInput = view.findViewById<EditText>(R.id.messageInput)
+        startTimePicker = view.findViewById(R.id.startTimePicker)
+        endTimePicker = view.findViewById(R.id.endTimePicker)
+        messageInput = view.findViewById(R.id.messageInput)
         val notifyDatePicker = view.findViewById<Button>(R.id.notifyDatePicker)
-        val notificationDateText = view.findViewById<EditText>(R.id.notificationDateText)
+        notificationDateText = view.findViewById(R.id.notificationDateText)
         notifyDatePicker.setOnClickListener {
             val datePicker = MaterialDatePicker.Builder.datePicker().build()
             datePicker.show(childFragmentManager, "datePicker")
@@ -52,15 +61,10 @@ class InputDialogFragment : DialogFragment() {
             .setPositiveButton("Salvar") { dialog, id ->
                 val message = messageInput.text.toString()
                 val notifyDate = notificationDateText.text.toString()
-                viewModel.viewModelScope.launch {
-                    viewModel.point(
-                        "joaooctf@gmail.com",
-                        "$day/$month/$year",
-                        startTimePicker.hour.toString(),
-                        endTimePicker.hour.toString(),
-                        notifyDate,
-                        message
-                    )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !viewModel.hasExactAlarmPermission()) {
+                    requestExactAlarmPermission()
+                } else {
+                    schedulePoint()
                 }
             }
             .setNegativeButton("Cancelar") { dialog, id ->
@@ -69,5 +73,46 @@ class InputDialogFragment : DialogFragment() {
         return builder.create()
     }
 
+    private fun schedulePoint() {
+        val message = messageInput.text.toString()
+        val notifyDate = notificationDateText.text.toString()
+        lifecycleScope.launch {
+            viewModel.point(
+                SessionManager.getEmail(),
+                "$day/$month/$year",
+                startTimePicker.hour.toString(),
+                endTimePicker.hour.toString(),
+                notifyDate,
+                message
+            )
+        }
+    }
 
+    private fun requestExactAlarmPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+            startActivityForResult(intent, REQUEST_EXACT_ALARM_PERMISSION)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_EXACT_ALARM_PERMISSION) {
+            lifecycleScope.launch {
+                if (viewModel.hasExactAlarmPermission()) {
+                    schedulePoint()
+                } else {
+                    Snackbar.make(
+                        requireView(),
+                        "Permissão necessária para agendar notificações exatas não concedida",
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+    }
+
+    companion object {
+        private const val REQUEST_EXACT_ALARM_PERMISSION = 1001
+    }
 }

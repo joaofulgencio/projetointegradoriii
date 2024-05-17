@@ -5,6 +5,8 @@ import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -32,16 +34,19 @@ class PointViewModel(application: Application) : AndroidViewModel(application) {
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.Main + job)
 
-    fun point(email: String, dataDoPonto: String,  entrada: String, saida: String, notifyDate: String, message: String) {
+    fun point(email: String?, dataDoPonto: String,  entrada: String, saida: String, notifyDate: String, message: String) {
         val job = SupervisorJob()
         val scope = CoroutineScope(Dispatchers.Main + job)
 
 
         scope.launch {
             try {
-                // Agendar notificação
-                withContext(Dispatchers.IO) {
-                    scheduleNotification(getApplication(), notifyDate, 0, message)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && hasExactAlarmPermission()) {
+
+                    // Agendar notificação
+                    withContext(Dispatchers.IO) {
+                        scheduleNotification(getApplication(), notifyDate, 0, message)
+                    }
                 }
                 // Bater ponto
                 val response = withContext(Dispatchers.IO) {
@@ -67,14 +72,23 @@ class PointViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private suspend fun postPoint(email: String, dataDoPonto: String,  entrada: String, saida: String) : HttpResponse {
+    private suspend fun postPoint(email: String?, dataDoPonto: String,  entrada: String, saida: String) : HttpResponse {
          return KtorClient.client.post("http://10.0.2.2:8080/baterPonto") {
             contentType(ContentType.Application.Json)
             setBody(BaterPonto(email, dataDoPonto, entrada, saida))
         }
     }
 
-    data class BaterPonto(val email: String, val dataDoPonto: String, val entrada: String, val saida: String)
+    fun hasExactAlarmPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = getApplication<Application>().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            alarmManager.canScheduleExactAlarms()
+        } else {
+            true
+        }
+    }
+
+    data class BaterPonto(val email: String?, val dataDoPonto: String, val entrada: String, val saida: String)
 
 
 
@@ -94,7 +108,7 @@ class PointViewModel(application: Application) : AndroidViewModel(application) {
                 context,
                 0,
                 intent,
-                PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_IMMUTABLE
             )
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager?
         if (triggerTime != 0L) {

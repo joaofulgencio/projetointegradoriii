@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 object SessionManager {
     private const val SESSION_PREF = "session_pref"
     private const val LOGGED_IN = "logged_in"
+    private const val EMAIL = "email"
     private const val LOGIN_TIME = "login_time"
     private const val SESSION_DURATION = 15 * 60 * 1000 // 15 minutos
 
@@ -15,10 +16,11 @@ object SessionManager {
         sharedPreferences = context.getSharedPreferences(SESSION_PREF, Context.MODE_PRIVATE)
     }
 
-    fun saveSessionData() {
+    fun saveSessionData(matricula: String) {
         val editor = sharedPreferences.edit()
         editor.putBoolean(LOGGED_IN, true)
         editor.putLong(LOGIN_TIME, System.currentTimeMillis())
+        editor.putString(EMAIL, matricula)
         editor.apply()
     }
 
@@ -27,5 +29,9 @@ object SessionManager {
         val loginTime = sharedPreferences.getLong(LOGIN_TIME, 0)
         val currentTime = System.currentTimeMillis()
         return loggedIn && (currentTime - loginTime < SESSION_DURATION)
+    }
+
+    fun getEmail(): String? {
+        return sharedPreferences.getString(EMAIL, "email")
     }
 }

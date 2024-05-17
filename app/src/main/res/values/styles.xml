@@ -3,6 +3,13 @@
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here -->
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryVariant">@color/secondary</item>
+        <item name="colorPrimaryVariant">@color/grey</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.App.MediumComponent</item>
     </style>
+
+    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
 </resources>

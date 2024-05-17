@@ -17,6 +17,7 @@ import com.joao.fulgencio.fragmentos.session.SessionManager
 private const val SESSION_PREF = "session_pref"
 private const val LOGGED_IN = "logged_in"
 private const val LOGIN_TIME = "login_time"
+private const val EMAIL = "email"
 
 class MainActivity : AppCompatActivity() {
 
@@ -70,6 +71,7 @@ class MainActivity : AppCompatActivity() {
         with(sharedPreferences.edit()) {
             remove(LOGGED_IN)
             remove(LOGIN_TIME)
+            remove(EMAIL)
             apply()
         }
 

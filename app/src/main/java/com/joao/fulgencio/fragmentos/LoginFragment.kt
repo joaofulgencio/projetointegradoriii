@@ -63,7 +63,7 @@ class LoginFragment : Fragment() {
         viewModel.loginSuccess.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { success ->
                 if (success) {
-                    SessionManager.saveSessionData()
+                    SessionManager.saveSessionData( _binding!!.edtLoginEmail.text.toString() )
                     navigateToPunchFragment()
                 } else {
                     Toast.makeText(context, "Matrícula ou senha inválidos", Toast.LENGTH_SHORT)

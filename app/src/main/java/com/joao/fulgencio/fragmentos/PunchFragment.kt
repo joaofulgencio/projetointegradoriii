@@ -15,9 +15,11 @@ import android.content.pm.PackageManager
 import android.location.Location
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.transition.MaterialSharedAxis
 import com.joao.fulgencio.fragmentos.databinding.FragmentPunchBinding
 import com.joao.fulgencio.fragmentos.viewModel.PointViewModel
+import com.joao.fulgencio.fragmentos.viewModel.ReportViewModel
 
 private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
 private const val REQUEST_POST_NOTIFICATIONS = 1002
@@ -28,6 +30,7 @@ class PunchFragment : Fragment() {
     private lateinit var locationManager: LocationManager
     private var toastShown = false
     private val viewModel by viewModels<PointViewModel>()
+    private val reportViewModel by viewModels<ReportViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val referenceLatitude : Double = -22.8341535
@@ -106,6 +109,10 @@ class PunchFragment : Fragment() {
                 }
             }
         }
+
+        binding.btnRelatorio.setOnClickListener{
+            navigateToReportFragment()
+        }
     return binding.root
     }
 
@@ -152,7 +159,10 @@ class PunchFragment : Fragment() {
         return result[0] // Distance in meters
     }
 
-
+    private fun navigateToReportFragment() {
+        val acao = PunchFragmentDirections.actionPunchFragmentToReportFragment()
+        findNavController().navigate(acao)
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         locationManager.stopLocationUpdates()
