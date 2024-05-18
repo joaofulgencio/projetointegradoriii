@@ -36,6 +36,7 @@ class ReportFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as? MainActivity)?.supportActionBar?.title = "Relatório de Ponto"
         adapter = PunchAdapter(mutableListOf())
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
@@ -46,6 +47,9 @@ class ReportFragment : Fragment() {
                 adapter.relatorio.clear()
                 adapter.relatorio.addAll(it)
                 adapter.notifyDataSetChanged()
+                if (relatorios.isEmpty()) {
+                    binding.textViewTitle.text = "Nenhum ponto lançado"
+                }
             }
         })
 

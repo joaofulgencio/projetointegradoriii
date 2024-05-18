@@ -34,7 +34,7 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as? MainActivity)?.supportActionBar?.title = "Home Page"
+        (activity as? MainActivity)?.supportActionBar?.title = "Bem vindo"
     }
 
     override fun onCreateView(
