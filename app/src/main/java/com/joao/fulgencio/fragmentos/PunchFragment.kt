@@ -137,16 +137,6 @@ class PunchFragment : Fragment() {
     private fun disableCalendarView() {
         binding.calendarView.setOnDateChangeListener(null)
     }
-    private fun isDateInCurrentWeek(date: Calendar): Boolean {
-        val currentWeek = Calendar.getInstance()
-        val startOfWeek = Calendar.getInstance()
-        startOfWeek.set(Calendar.DAY_OF_WEEK, currentWeek.firstDayOfWeek)
-        val endOfWeek = Calendar.getInstance()
-        endOfWeek.set(Calendar.DAY_OF_WEEK, currentWeek.firstDayOfWeek)
-        endOfWeek.add(Calendar.DAY_OF_MONTH, 6) // Last day of the week
-
-        return date.after(startOfWeek) && date.before(endOfWeek)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -156,7 +146,7 @@ class PunchFragment : Fragment() {
     fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Float {
         val result = FloatArray(1)
         Location.distanceBetween(lat1, lon1, lat2, lon2, result)
-        return result[0] // Distance in meters
+        return result[0] // Distancia em metros
     }
 
     private fun navigateToReportFragment() {

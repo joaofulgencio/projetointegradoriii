@@ -76,16 +76,28 @@ class InputDialogFragment : DialogFragment() {
     private fun schedulePoint() {
         val message = messageInput.text.toString()
         val notifyDate = notificationDateText.text.toString()
+        val horaEntrada = formatTime(startTimePicker)
+        val horaSaida = formatTime(endTimePicker)
+        val data = formatDate(day.toInt(), month.toInt(), year.toInt())
         lifecycleScope.launch {
             viewModel.point(
                 SessionManager.getEmail(),
-                "$day/$month/$year",
-                startTimePicker.hour.toString(),
-                endTimePicker.hour.toString(),
+                data,
+                horaEntrada,
+                horaSaida,
                 notifyDate,
                 message
             )
         }
+    }
+
+
+    fun formatTime(time: TimePicker): String {
+        return String.format("%02d:%02d", time.hour, time.minute)
+    }
+
+    fun formatDate(dia: Int, mes: Int, ano: Int): String {
+        return String.format("%02d/%02d/%04d", dia, mes, ano)
     }
 
     private fun requestExactAlarmPermission() {

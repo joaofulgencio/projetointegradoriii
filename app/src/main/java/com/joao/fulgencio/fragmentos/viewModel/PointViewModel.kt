@@ -43,7 +43,7 @@ class PointViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && hasExactAlarmPermission()) {
 
-                    // Agendar notificação
+                    // Agendar notificação - Trocar triggerTime para funcionamento correto do agendamento
                     withContext(Dispatchers.IO) {
                         scheduleNotification(getApplication(), notifyDate, 0, message)
                     }
